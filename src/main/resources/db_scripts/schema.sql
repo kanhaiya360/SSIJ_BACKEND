@@ -46,7 +46,6 @@ CREATE TABLE product (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     category_name VARCHAR(255) NOT NULL,
-    sub_category_name VARCHAR(255) NOT NULL,
     status VARCHAR(50) DEFAULT 'Full',
     is_published BOOLEAN DEFAULT false,
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -182,11 +181,7 @@ VALUES
 ('9876543210', '$2a$10$encryptedPasswordExample', 'Akeshya Corp', 'Main Branch', '123 Main Street, City, State', 'APPROVED', true);
 
 -- Insert sample products
-INSERT INTO product (name, category_name, sub_category_name, status, is_published) 
-VALUES 
-('Smartphone X', 'Electronics', 'Mobile Phones', 'Full', true),
-('Men''s T-Shirt', 'Clothing', 'Men''s Wear', 'Limited', true),
-('Office Chair', 'Furniture', 'Office Furniture', 'Full', false);
+
 
 -- Insert sample product images
 INSERT INTO product_image (product_id, image_path, image_order, is_primary, alt_text)

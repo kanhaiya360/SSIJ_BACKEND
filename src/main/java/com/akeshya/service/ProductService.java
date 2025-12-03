@@ -19,7 +19,7 @@ public interface ProductService {
     ResponseEntity<?> updateProductPublishStatus(Long id, Boolean isPublished);
     ResponseEntity<?> deleteProduct(Long id);
     ResponseEntity<?> getCategories();
-    ResponseEntity<?> getSubCategoriesByCategory(String categoryName);
+
     ResponseEntity<?> toggleProductPublishStatus(Long id);
     ResponseEntity<?> getProductCountByStatus();
 

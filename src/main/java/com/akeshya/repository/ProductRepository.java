@@ -24,8 +24,5 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     @Query("SELECT DISTINCT p.categoryName FROM Product p")
     List<String> findAllDistinctCategories();
     
-    @Query("SELECT DISTINCT p.subCategoryName FROM Product p WHERE p.categoryName = :categoryName")
-    List<String> findSubCategoriesByCategory(@Param("categoryName") String categoryName);
-    
     Optional<Product> findByIdAndIsPublishedTrue(Long id);
 }

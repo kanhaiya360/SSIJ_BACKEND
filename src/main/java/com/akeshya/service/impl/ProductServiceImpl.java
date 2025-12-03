@@ -261,22 +261,6 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    @Override
-    public ResponseEntity<?> getSubCategoriesByCategory(String categoryName) {
-        try {
-            log.info("Fetching sub-categories for category: {}", categoryName);
-            
-            List<String> subCategories = productRepository.findSubCategoriesByCategory(categoryName);
-            
-            log.info("Found {} sub-categories for category: {}", subCategories.size(), categoryName);
-            return ResponseEntity.ok(subCategories);
-            
-        } catch (Exception e) {
-            log.error("Error retrieving sub-categories for category {}: {}", categoryName, e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error retrieving sub-categories: " + e.getMessage());
-        }
-    }
 
     @Override
     @Transactional
@@ -435,7 +419,6 @@ public class ProductServiceImpl implements ProductService {
                 .id(product.getId())
                 .name(product.getName())
                 .categoryName(product.getCategoryName())
-                .subCategoryName(product.getSubCategoryName())
                 .status(product.getStatus())
                 .isPublished(product.getIsPublished())
                 .colors(new ArrayList<>(product.getColors()))

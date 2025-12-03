@@ -49,9 +49,7 @@ public class Product {
     @Column(name = "category_name", nullable = false)
     private String categoryName;
     
-    @NotBlank(message = "Sub-category name is required")
-    @Column(name = "sub_category_name", nullable = false)
-    private String subCategoryName;
+
     
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")

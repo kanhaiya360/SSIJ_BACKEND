@@ -1,8 +1,8 @@
 spring:
   application:
-    name: ${APP_NAME:akeshya}
-  profiles:
-    active: ${SPRING_PROFILES_ACTIVE:local}
+  #   name: ${APP_NAME:akeshya}
+  # profiles:
+  #   active: ${SPRING_PROFILES_ACTIVE:local}
 
 
   # ────────────────────── DATABASE (PostgreSQL) ──────────────────────
@@ -21,7 +21,7 @@ spring:
   # ────────────────────── JPA / HIBERNATE ──────────────────────
   jpa:
     hibernate:
-      ddl-auto: ${JPA_DDL_AUTO:update}
+      ddl-auto: ${JPA_DDL_AUTO:create}
     show-sql: ${JPA_SHOW_SQL:true}
     properties:
       hibernate:
