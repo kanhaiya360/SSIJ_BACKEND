@@ -15,7 +15,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     
     List<Product> findByIsPublishedTrue();
     List<Product> findByCategoryName(String categoryName);
-    List<Product> findByCategoryNameAndSubCategoryName(String categoryName, String subCategoryName);
+//    List<Product> findByCategoryNameAndSubCategoryName(String categoryName, String subCategoryName);
     List<Product> findByStatus(String status);
     
     @Query("SELECT p FROM Product p WHERE p.name LIKE %:name%")

@@ -12,7 +12,7 @@ public interface ProductService {
     ResponseEntity<?> getAllProducts();
     ResponseEntity<?> getPublishedProducts();
     ResponseEntity<?> getProductsByCategory(String categoryName);
-    ResponseEntity<?> getProductsByCategoryAndSubCategory(String categoryName, String subCategoryName);
+//    ResponseEntity<?> getProductsByCategoryAndSubCategory(String categoryName, String subCategoryName);
     ResponseEntity<?> searchProductsByName(String name);
     ResponseEntity<?> updateProduct(Long id, ProductRequest request);
     ResponseEntity<?> updateProductStatus(Long id, Boolean isPublished);

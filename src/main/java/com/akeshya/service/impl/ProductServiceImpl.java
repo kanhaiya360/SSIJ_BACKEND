@@ -141,27 +141,6 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    @Override
-    public ResponseEntity<?> getProductsByCategoryAndSubCategory(String categoryName, String subCategoryName) {
-        try {
-            log.info("Fetching products by category: {} and sub-category: {}", categoryName, subCategoryName);
-            
-            List<Product> products = productRepository.findByCategoryNameAndSubCategoryName(categoryName, subCategoryName);
-            List<ProductResponse> response = products.stream()
-                    .map(this::mapToResponse)
-                    .collect(Collectors.toList());
-            
-            log.info("Found {} products in category: {} and sub-category: {}", 
-                    response.size(), categoryName, subCategoryName);
-            return ResponseEntity.ok(response);
-            
-        } catch (Exception e) {
-            log.error("Error retrieving products by category {} and sub-category {}: {}", 
-                    categoryName, subCategoryName, e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error retrieving products: " + e.getMessage());
-        }
-    }
 
     @Override
     public ResponseEntity<?> searchProductsByName(String name) {
