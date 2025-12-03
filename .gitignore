@@ -1,0 +1,82 @@
+###################################
+# Maven & Java Build Artifacts
+###################################
+target/
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+build/
+dist/
+
+###################################
+# Spring Boot Logs
+###################################
+*.log
+logs/
+*.out
+
+###################################
+# Environment / Secrets
+###################################
+*.env
+application-*.yml
+application-*.yaml
+*.secret
+*.properties.secret
+
+###################################
+# Maven Wrapper
+###################################
+.mvn/wrapper/maven-wrapper.jar
+.mvn/timing.properties
+
+###################################
+# STS (Spring Tool Suite)
+###################################
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+
+###################################
+# IntelliJ IDEA
+###################################
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+###################################
+# NetBeans
+###################################
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+###################################
+# VS Code
+###################################
+.vscode/
+
+###################################
+# OS / System Files
+###################################
+.DS_Store
+Thumbs.db
+
+###################################
+# Uploads / User Files
+###################################
+uploads/
