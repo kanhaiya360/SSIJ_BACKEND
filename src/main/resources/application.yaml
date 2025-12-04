@@ -1,15 +1,11 @@
 spring:
   application:
-  #   name: ${APP_NAME:akeshya}
-  # profiles:
-  #   active: ${SPRING_PROFILES_ACTIVE:local}
-
-
+    name: ${APP_NAME:akeshya}
   # ────────────────────── DATABASE (PostgreSQL) ──────────────────────
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://dpg-d4mj6jre5dus738co4ng-a.oregon-postgres.render.com:5432/ssij}
-    username: ${DATABASE_USERNAME:ssij_user}
-    password: ${DATABASE_PASSWORD:olRvwdIAwoDLCZJdxoKgrbK6wtRY0szM}
+    url: ${DATABASE_URL:jdbc:postgresql://db.vcgsvmgmgdrshphumffh.supabase.co:5432/postgres}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:Kanhaiya@1234}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: ${DATABASE_MAX_POOL_SIZE:20}
@@ -21,7 +17,7 @@ spring:
   # ────────────────────── JPA / HIBERNATE ──────────────────────
   jpa:
     hibernate:
-      ddl-auto: ${JPA_DDL_AUTO:create}
+      ddl-auto: ${JPA_DDL_AUTO:update}
     show-sql: ${JPA_SHOW_SQL:true}
     properties:
       hibernate:
