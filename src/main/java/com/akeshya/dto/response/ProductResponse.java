@@ -16,8 +16,7 @@ import lombok.NoArgsConstructor;
 public class ProductResponse {
     private Long id;
     private String name;
-    private String categoryName;
-    private String subCategoryName;
+	private CategoryResponse category;
     private String status;
     private Boolean isPublished;
     private List<String> colors = new ArrayList<>();

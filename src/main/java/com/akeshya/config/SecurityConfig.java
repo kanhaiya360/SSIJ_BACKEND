@@ -22,10 +22,12 @@ import java.util.List;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
+    private final CorsConfigurationSource corsConfigurationSource;
     private final JwtAuthFilter jwtAuthFilter;
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter, CorsConfigurationSource corsConfigurationSource) {
         this.jwtAuthFilter = jwtAuthFilter;
+        this.corsConfigurationSource = corsConfigurationSource;
     }
 
     @Bean
@@ -40,43 +42,47 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS
-            .csrf(csrf -> csrf.disable())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-            		
-            		.requestMatchers(
-            				 "/swagger-ui/**",
-            	                "/v3/api-docs/**",
-            	                "/swagger-ui.html"
-                        ).permitAll()
-                // Public endpoints
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/products/published").permitAll()
-                .requestMatchers("/api/products").permitAll()
-                .requestMatchers("/api/products/{id}").permitAll()
-                .requestMatchers("/api/products/category/**").permitAll()
-                .requestMatchers("/api/products/categories").permitAll()
-                .requestMatchers("/uploads/**").permitAll() // Allow access to uploaded images
-                .requestMatchers("/api/test/sms**").permitAll() 
-                .requestMatchers("/api/test/**").permitAll()
-                .requestMatchers("/error").permitAll()
-                
-                // Protected endpoints - require authentication
-                .requestMatchers("/api/customer/**").authenticated()
-                
-                // Admin only endpoints
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/upload/**").hasRole("ADMIN") // File upload endpoints
-                .requestMatchers("/api/products/**").hasRole("ADMIN") // All other product endpoints (create, update, delete)
-                
-                // Public jewellery endpoints
-                .requestMatchers("/api/jewellery/**").permitAll()
-                
-                .anyRequest().authenticated()
-            )
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .csrf(csrf -> csrf.disable()) // IMPORTANT FOR REST API
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+
+                        // Swagger Public
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+
+                        // Auth Public Endpoints
+                        .requestMatchers("/api/auth/**").permitAll()
+
+                        // Public Product Endpoints
+                        .requestMatchers("/api/products/published").permitAll()
+                        .requestMatchers("/api/products").permitAll()
+                        .requestMatchers("/api/products/{id}").permitAll()
+                        .requestMatchers("/api/products/category/**").permitAll()
+                        .requestMatchers("/api/products/categories").permitAll()
+
+                        // File access public
+                        .requestMatchers("/uploads/**").permitAll()
+
+                        // Test endpoints
+                        .requestMatchers("/api/test/**").permitAll()
+
+                        // Public jewellery pages
+                        .requestMatchers("/api/jewellery/**").permitAll()
+                        .requestMatchers("/").permitAll()
+
+                        // Admin only
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/upload/**").hasRole("ADMIN")
+                        .requestMatchers("/api/products/**").hasRole("ADMIN")
+
+                        // Protected endpoints
+                        .requestMatchers("/api/customer/**").authenticated()
+
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -84,44 +90,41 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        
-        // Allow Vite development server and common frontend origins
+
         configuration.setAllowedOriginPatterns(List.of(
-            "http://localhost:5173",  // Vite default port
-            "http://localhost:5174",  // Vite alternate port
-            "http://127.0.0.1:5173",
-            "http://localhost:3000",  // Create React App
-            "http://localhost:8081",  // Alternative frontend port
-            "https://*.vercel.app",   // Vercel deployments
-            "https://*.netlify.app"   // Netlify deployments
+                "https://b2b.ssij.in",
+                "http://localhost:5173",
+                "http://localhost:5174",
+                "http://77.42.18.195",
+                "http://77.42.18.195:8080"
         ));
-        
+
         configuration.setAllowedMethods(Arrays.asList(
-            "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"
+                "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"
         ));
-        
+
         configuration.setAllowedHeaders(Arrays.asList(
-            "Authorization",
-            "Content-Type",
-            "Content-Length",
-            "Accept",
-            "Origin",
-            "X-Requested-With",
-            "X-Request-ID",
-            "Access-Control-Request-Method",
-            "Access-Control-Request-Headers",
-            "Cache-Control"
+                "Authorization",
+                "Content-Type",
+                "Content-Length",
+                "Accept",
+                "Origin",
+                "X-Requested-With",
+                "X-Request-ID",
+                "Access-Control-Request-Method",
+                "Access-Control-Request-Headers",
+                "Cache-Control"
         ));
-        
+
         configuration.setExposedHeaders(Arrays.asList(
-            "Authorization",
-            "Content-Disposition",
-            "X-Request-ID"
+                "Authorization",
+                "Content-Disposition",
+                "X-Request-ID"
         ));
-        
+
         configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L); // 1 hour cache for preflight requests
-        
+        configuration.setMaxAge(3600L);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

@@ -14,12 +14,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.akeshya.dto.request.ProductImageRequest;
 import com.akeshya.dto.request.ProductRequest;
+import com.akeshya.dto.response.CategoryResponse;
 import com.akeshya.dto.response.ProductImageResponse;
 import com.akeshya.dto.response.ProductResponse;
 import com.akeshya.dto.response.ProductSizeResponse;
+import com.akeshya.entity.Category;
 import com.akeshya.entity.Product;
 import com.akeshya.entity.ProductImage;
 import com.akeshya.entity.ProductSize;
+import com.akeshya.repository.CategoryRepository;
 import com.akeshya.repository.ProductRepository;
 import com.akeshya.service.FileStorageService;
 import com.akeshya.service.ProductService;
@@ -35,6 +38,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final FileStorageService fileStorageService;
+    private final CategoryRepository categoryRepository; 
     private final ObjectMapper objectMapper;
 
     @Override
@@ -318,16 +322,18 @@ public class ProductServiceImpl implements ProductService {
         if (request.getName() == null || request.getName().trim().isEmpty()) {
             throw new IllegalArgumentException("Product name is required");
         }
-        if (request.getCategoryName() == null || request.getCategoryName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Category name is required");
+        if (request.getCategoryId() == null) {
+            throw new IllegalArgumentException("Category ID is required");
         }
     }
 
     private Product buildProductFromRequest(ProductRequest request) {
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + request.getCategoryId()));
+        
         Product product = Product.builder()
                 .name(request.getName().trim())
-                .categoryName(request.getCategoryName().trim())
-
+                .category(category)
                 .status(request.getStatus() != null ? request.getStatus() : "Full")
                 .isPublished(request.getIsPublished() != null ? request.getIsPublished() : false)
                 .build();
@@ -369,8 +375,12 @@ public class ProductServiceImpl implements ProductService {
 
     private void updateProductFromRequest(Product product, ProductRequest request) {
         product.setName(request.getName().trim());
-        product.setCategoryName(request.getCategoryName().trim());
         
+        if (request.getCategoryId() != null) {
+            Category category = categoryRepository.findById(request.getCategoryId())
+                    .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + request.getCategoryId()));
+            product.setCategory(category);
+        }
         if (request.getStatus() != null) {
             product.setStatus(request.getStatus());
         }
@@ -415,10 +425,22 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private ProductResponse mapToResponse(Product product) {
+        // Map category to CategoryResponse
+        CategoryResponse categoryResponse = null;
+        if (product.getCategory() != null) {
+            categoryResponse = new CategoryResponse();
+            categoryResponse.setId(product.getCategory().getId());
+            categoryResponse.setName(product.getCategory().getName());
+            categoryResponse.setDescription(product.getCategory().getDescription());
+            categoryResponse.setStatus(product.getCategory().isStatus());
+            categoryResponse.setCreatedAt(product.getCategory().getCreatedAt().toString());
+            categoryResponse.setUpdatedAt(product.getCategory().getUpdatedAt().toString());
+        }
+        
         return ProductResponse.builder()
                 .id(product.getId())
                 .name(product.getName())
-                .categoryName(product.getCategoryName())
+                .category(categoryResponse) 
                 .status(product.getStatus())
                 .isPublished(product.getIsPublished())
                 .colors(new ArrayList<>(product.getColors()))

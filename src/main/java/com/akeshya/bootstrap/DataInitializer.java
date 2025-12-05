@@ -25,39 +25,39 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-//        // ─────────────────── CREATE ROLES ───────────────────
-//        Role roleAdmin = createRoleIfNotExists("ROLE_ADMIN");
-//        Role roleUser = createRoleIfNotExists("ROLE_USER");
-//
-//        // ─────────────────── CREATE DEFAULT ADMIN USER ───────────────────
-//        if (userRepository.count() == 0) {
-//
-//            User admin = User.builder()
-//                    .contactNumber("9999999999")
-//                    .password(passwordEncoder.encode("admin123"))
-//                    .companyName("Akeshiya")
-//                    .branchName("Main Branch")
-//                    .shippingAddress("Hyderabad")
-//                    .contactPersonName("Super Admin")
-//                    .email("admin@akeshya.com")
-//                    .status(UserStatus.APPROVED)
-//                    .enabled(true)
-//                    .roles(Set.of(roleAdmin))   // Assign admin role only
-//                    .build();
-//
-//            userRepository.save(admin);
-//
-//            System.out.println("★★★★★ DEFAULT ADMIN CREATED ★★★★★");
-//        }
-//    }
-//
-//    private Role createRoleIfNotExists(String roleName) {
-//        return roleRepository.findByName(roleName)
-//                .orElseGet(() -> {
-//                    Role role = new Role();
-//                    role.setName(roleName);
-//                    return roleRepository.save(role);
-//                });
-    	System.out.println("Its working fine");
+        // ─────────────────── CREATE ROLES ───────────────────
+        Role roleAdmin = createRoleIfNotExists("ROLE_ADMIN");
+        Role roleUser = createRoleIfNotExists("ROLE_USER");
+
+        // ─────────────────── CREATE DEFAULT ADMIN USER ───────────────────
+        if (userRepository.count() == 0) {
+
+            User admin = User.builder()
+                    .contactNumber("9999999999")
+                    .password(passwordEncoder.encode("admin123"))
+                    .companyName("Akeshiya")
+                    .branchName("Main Branch")
+                    .shippingAddress("Hyderabad")
+                    .contactPersonName("Super Admin")
+                    .email("admin@akeshya.com")
+                    .status(UserStatus.APPROVED)
+                    .enabled(true)
+                    .roles(Set.of(roleAdmin))   // Assign admin role only
+                    .build();
+
+            userRepository.save(admin);
+
+            System.out.println("★★★★★ DEFAULT ADMIN CREATED ★★★★★");
+        }
+    }
+
+    private Role createRoleIfNotExists(String roleName) {
+        return roleRepository.findByName(roleName)
+                .orElseGet(() -> {
+                    Role role = new Role();
+                    role.setName(roleName);
+                    return roleRepository.save(role);
+                });
+//    	System.out.println("Its working fine");
     }
 }
