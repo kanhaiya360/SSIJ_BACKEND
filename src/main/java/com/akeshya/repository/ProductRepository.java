@@ -29,4 +29,6 @@ public interface ProductRepository extends JpaRepository<Product, Long>{
     List<String> findAllDistinctCategories();
     
     Optional<Product> findByIdAndIsPublishedTrue(Long id);
+
+	List<Product> findByCategoryIdAndIsPublishedTrue(Long categoryId);
 }

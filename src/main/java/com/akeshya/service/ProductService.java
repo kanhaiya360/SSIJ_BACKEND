@@ -29,4 +29,6 @@ public interface ProductService {
     ResponseEntity<?> updateProductWithImages(Long id, ProductRequest productRequest, MultipartFile[] imageFiles);
     ResponseEntity<?> addImagesToProduct(Long productId, MultipartFile[] imageFiles);
     ResponseEntity<?> removeImageFromProduct(Long productId, Long imageId);
+//	Caterory with products
+	ResponseEntity<?> getProductsByCategoryId(Long categoryId);
 }

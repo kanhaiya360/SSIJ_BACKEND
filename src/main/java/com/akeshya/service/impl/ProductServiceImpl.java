@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.akeshya.dto.request.ProductImageRequest;
 import com.akeshya.dto.request.ProductRequest;
 import com.akeshya.dto.response.CategoryResponse;
+import com.akeshya.dto.response.CategoryWithProductsResponse;
 import com.akeshya.dto.response.ProductImageResponse;
 import com.akeshya.dto.response.ProductResponse;
 import com.akeshya.dto.response.ProductSizeResponse;
@@ -667,5 +668,118 @@ public class ProductServiceImpl implements ProductService {
                 }
             }
         }
+    }
+
+    @Override
+    public ResponseEntity<?> getProductsByCategoryId(Long categoryId) {
+        try {
+            log.info("Fetching products for category ID: {}", categoryId);
+            
+            // Validate category ID
+            if (categoryId == null || categoryId <= 0) {
+                String errorMsg = "Invalid category ID. Category ID must be a positive number.";
+                log.warn(errorMsg);
+                return ResponseEntity.badRequest().body(errorMsg);
+            }
+            
+            // Check if category exists
+            Category category = categoryRepository.findById(categoryId)
+                    .orElseThrow(() -> {
+                        String errorMsg = String.format("Category not found with ID: %d", categoryId);
+                        log.warn(errorMsg);
+                        return new RuntimeException(errorMsg);
+                    });
+            
+            // Get published products for this category
+            List<Product> products = productRepository.findByCategoryIdAndIsPublishedTrue(categoryId);
+            
+            log.info("Found {} published products for category: {} (ID: {})", 
+                    products.size(), category.getName(), categoryId);
+            
+            // If no products found, you can return an empty list or a message
+            if (products.isEmpty()) {
+                log.info("No published products found for category: {} (ID: {})", 
+                        category.getName(), categoryId);
+                
+                // You can choose to return an empty response or a message
+                CategoryWithProductsResponse emptyResponse = new CategoryWithProductsResponse();
+                emptyResponse.setCategory(mapToCategoryResponse(category));
+                emptyResponse.setProducts(List.of()); // Empty list
+                
+                return ResponseEntity.ok(emptyResponse);
+            }
+            
+            // Map category to CategoryResponse
+            CategoryResponse categoryResponse = CategoryResponse.builder()
+                    .id(category.getId())
+                    .name(category.getName())
+                    .description(category.getDescription())
+                    .status(category.isStatus())
+                    .createdAt(category.getCreatedAt() != null ? 
+                            category.getCreatedAt().toString() : null)
+                    .updatedAt(category.getUpdatedAt() != null ? 
+                            category.getUpdatedAt().toString() : null)
+                    .build();
+            
+            List<ProductResponse> productResponses = products.stream()
+                    .map(product -> {
+                        // For each product, create response with category info
+                        return ProductResponse.builder()
+                                .id(product.getId())
+                                .name(product.getName())
+                                .category(categoryResponse) // Add category to each product
+                                .status(product.getStatus())
+                                .isPublished(product.getIsPublished())
+                                .colors(new ArrayList<>(product.getColors()))
+                                .sizes(product.getSizes().stream()
+                                        .map(size -> ProductSizeResponse.builder()
+                                                .id(size.getId())
+                                                .sizeValue(size.getSize())
+                                                .weight(size.getWeight())
+                                                .build())
+                                        .collect(Collectors.toList()))
+                                .images(product.getImages().stream()
+                                        .map(image -> ProductImageResponse.builder()
+                                                .id(image.getId())
+                                                .imagePath(image.getImagePath())
+                                                .imageOrder(image.getImageOrder())
+                                                .isPrimary(image.getIsPrimary())
+                                                .altText(image.getAltText())
+                                                .build())
+                                        .collect(Collectors.toList()))
+                                .createdDate(product.getCreatedDate())
+                                .updatedDate(product.getUpdatedDate())
+                                .build();
+                    })
+                    .collect(Collectors.toList());
+            
+            // Create the final response
+            CategoryWithProductsResponse response = new CategoryWithProductsResponse();
+            response.setCategory(categoryResponse);
+            response.setProducts(productResponses);
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (RuntimeException e) {
+            log.error("Category not found error for ID {}: {}", categoryId, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            
+        } catch (Exception e) {
+            log.error("Error fetching products for category ID {}: {}", categoryId, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while fetching products. Please try again later.");
+        }
+    }
+    private CategoryResponse mapToCategoryResponse(Category category) {
+        return CategoryResponse.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .description(category.getDescription())
+                .status(category.isStatus())
+                .createdAt(category.getCreatedAt() != null ? 
+                        category.getCreatedAt().toString() : null)
+                .updatedAt(category.getUpdatedAt() != null ? 
+                        category.getUpdatedAt().toString() : null)
+                .build();
     }
 }
