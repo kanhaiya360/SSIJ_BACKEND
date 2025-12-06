@@ -2,10 +2,12 @@ package com.akeshya.service.impl;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -194,5 +196,62 @@ public class CustomerServiceImpl implements CustomerService {
             .collect(Collectors.toList());
         
         return ResponseEntity.ok(userDtos);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> getCustomerById(UUID id) {
+        try {
+            logger.info("Fetching customer details for ID: {}", id);
+            
+            // Find the user by ID
+            User user = userRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + id));
+            
+            boolean isAdmin = user.getRoles().stream()
+                    .anyMatch(role -> "ROLE_ADMIN".equals(role.getName()));
+            
+            if (isAdmin) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of(
+                            "message", "Admin user details cannot be accessed through this endpoint",
+                            "error", "Unauthorized access"
+                        ));
+            }
+            
+
+            CustomerResponse response = new CustomerResponse(
+                    user.getId(),
+                    user.getContactNumber(),
+                    user.getCompanyName(),
+                    user.getBranchName(),
+                    user.getGstNumber(),
+                    user.getShippingAddress(),
+                    user.getContactPersonName(),
+                    user.getEmail(),
+                    user.getAdditionalPhoneNumbers()
+            );
+            
+            logger.info("Successfully fetched customer details for ID: {}", id);
+            return ResponseEntity.ok(Map.of(
+                    "message", "Customer details retrieved successfully",
+                    "customer", response
+            ));
+            
+        } catch (RuntimeException e) {
+            logger.error("Error fetching customer by ID {}: {}", id, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of(
+                            "message", "Failed to fetch customer details",
+                            "error", e.getMessage()
+                    ));
+        } catch (Exception e) {
+            logger.error("Unexpected error fetching customer by ID {}: {}", id, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "message", "An unexpected error occurred",
+                            "error", "Internal server error"
+                    ));
+        }
     }
 }

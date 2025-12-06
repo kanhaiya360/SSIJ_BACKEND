@@ -70,7 +70,7 @@ public class ProductController {
     @PostMapping("/with-images")
 //    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> createProductWithImages(
-            @RequestPart("productRequest") String productRequestStr,
+            @RequestPart("productData") String productRequestStr,
             @RequestPart(value = "imageFiles", required = false) MultipartFile[] imageFiles) {
         
         try {
