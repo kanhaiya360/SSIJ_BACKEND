@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .container {
+            width: 100%;
+            padding: 20px;
+            background: #f5f5f5;
+            font-family: Arial, sans-serif;
+        }
+        .box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+        }
+        .otp {
+            font-size: 28px;
+            font-weight: bold;
+            color: #007bff;
+            padding: 10px;
+            background: #eef4ff;
+            display: inline-block;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        p {
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="box">
+        <h2>Your OTP Code</h2>
+        <p>Use the below OTP to complete your verification:</p>
+        <div class="otp">{{OTP}}</div>
+        <p>This OTP is valid for 5 minutes.</p>
+    </div>
+</div>
+</body>
+</html>
